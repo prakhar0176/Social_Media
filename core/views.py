@@ -9,8 +9,23 @@ from .models import Profile
 
 @login_required(login_url='signin')
 def index(request):
-    return render(request, 'index.html')
+    user_object = User.objects.get(username=request.user.username)
+    user_profile = Profile.objects.get(user=user_object)
+    return render(request, 'index.html', {'user_profile':user_profile})
     # return HttpResponse('<h1>Welcome to our app.</h1>')
+
+def upload(request):
+
+    if request.method == 'POST':
+        user = request.user.username
+        image = request.FLIE.get('image_upload')
+        caption = request.POST['caption']
+
+        new_post = Post.objects.create(user=user, image=image, caption=caption)
+        new_post.save()
+    else:
+        return redirect('/')
+    return HttpResponse('<h1>Upload View</h1>')
 
 @login_required(login_url='signin')
 def settings(request):
