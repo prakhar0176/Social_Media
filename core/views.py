@@ -11,8 +11,9 @@ from .models import Profile, Post
 def index(request):
     user_object = User.objects.get(username=request.user.username)
     user_profile = Profile.objects.get(user=user_object)
+    posts = Post.objects.all()
     if user_profile != None:
-        return render(request, 'index.html', {'user_profile':user_profile})
+        return render(request, 'index.html', {'user_profile':user_profile, 'posts':posts})
     else:
         return redirect('signin')
 
@@ -22,13 +23,10 @@ def upload(request):
 
 
     if request.method == 'POST':
-        # print("\n*************",request.FILES['image_upload'])
-        # print("\n*************",request.FLIES.get['image_upload'])
+        # print("\n*************",request.FILES.get('image_upload'))
         user = request.user.username
-        image = request.FLIES.get('image_upload')
-        # image = request.FILES['image_upload']
+        image = request.FILES.get('image_upload')
         caption = request.POST['caption']
-
         new_post = Post.objects.create(user=user, image=image, caption=caption)
         new_post.save()
         return redirect('/')
@@ -39,7 +37,7 @@ def upload(request):
 @login_required(login_url='signin')
 def settings(request):
     user_profile = Profile.objects.get(user=request.user)
-    print("\n***********",user_profile)
+    # print("\n***********",user_profile)
 
     if request.method == 'POST':
         if request.FILES.get('image') == None:
